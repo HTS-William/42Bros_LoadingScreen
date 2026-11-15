@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>42Bros | WWII OccupationRP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+<!--
+  42Bros loading screen. Garry's Mod shows it while players connect
+  (sv_loadingurl in server.cfg) and calls GameDetails, SetFilesTotal,
+  SetFilesNeeded, DownloadingFile and SetStatusChanged (bottom of the file).
+  Opened in a normal browser it plays a short demo.
+
+  Change the text in SETTINGS below. Keep the JavaScript old-fashioned
+  (var, no arrow functions): some players' games use an old browser engine.
+-->
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0d0c0a; }
+  body { color: #e9e1d0; font-family: "Inter", Arial, sans-serif; font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+  #bg { position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+        background: -webkit-radial-gradient(28% 55%, ellipse, #1d1a15 0%, #0d0c0a 62%);
+        background: radial-gradient(ellipse at 28% 55%, #1d1a15 0%, #0d0c0a 62%); }
+  #glow { position: absolute; width: 70em; height: 70em; left: -18em; top: -10em; border-radius: 50%;
+          background: -webkit-radial-gradient(50% 50%, circle, rgba(201,168,110,0.07), rgba(201,168,110,0) 65%);
+          background: radial-gradient(circle, rgba(201,168,110,0.07), rgba(201,168,110,0) 65%);
+          -webkit-animation: drift 30s ease-in-out infinite alternate; animation: drift 30s ease-in-out infinite alternate; }
+  @-webkit-keyframes drift { from { -webkit-transform: translate(0,0); } to { -webkit-transform: translate(12em, 6em); } }
+  @keyframes drift { from { transform: translate(0,0); } to { transform: translate(12em, 6em); } }
+  #grain { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; opacity: 0.07; pointer-events: none;
+           -webkit-animation: grain 0.6s steps(3) infinite; animation: grain 0.6s steps(3) infinite; }
+  @-webkit-keyframes grain { 0% { -webkit-transform: translate(0,0); } 33% { -webkit-transform: translate(-4%,3%); } 66% { -webkit-transform: translate(3%,-4%); } 100% { -webkit-transform: translate(0,0); } }
+  @keyframes grain { 0% { transform: translate(0,0); } 33% { transform: translate(-4%,3%); } 66% { transform: translate(3%,-4%); } 100% { transform: translate(0,0); } }
+  #vignette { position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;
+              background: -webkit-radial-gradient(50% 50%, ellipse, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+              background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%); }
+
+  .mono { font-family: "IBM Plex Mono", "Courier New", monospace; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: #8c8270; }
+
+  /* top bar */
+  #top { position: absolute; left: 6%; right: 6%; top: 6%; height: 3em; }
+  #logo { position: absolute; left: 0; top: 0; height: 3em; opacity: 0.92; }
+  #radio { position: absolute; right: 0; top: 0.9em; white-space: nowrap; }
+  #radio .bars { display: inline-block; vertical-align: middle; height: 0.9em; margin-right: 0.8em; }
+  #radio .bars i { display: inline-block; width: 2px; height: 100%; margin-right: 2px; background: #b5473a;
+                   -webkit-transform-origin: 50% 100%; transform-origin: 50% 100%;
+                   -webkit-animation: eq 1s ease-in-out infinite alternate; animation: eq 1s ease-in-out infinite alternate; }
+  #radio .bars i:nth-child(2) { -webkit-animation-delay: -0.4s; animation-delay: -0.4s; }
+  #radio .bars i:nth-child(3) { -webkit-animation-delay: -0.7s; animation-delay: -0.7s; }
+  #radio .bars i:nth-child(4) { -webkit-animation-delay: -0.2s; animation-delay: -0.2s; }
+  #radio.off .bars i { -webkit-animation: none; animation: none; -webkit-transform: scaleY(0.2); transform: scaleY(0.2); background: #5a5245; }
+  @-webkit-keyframes eq { from { -webkit-transform: scaleY(0.2); } to { -webkit-transform: scaleY(1); } }
+  @keyframes eq { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }
+
+  /* the headline */
+  #main { position: absolute; left: 6%; top: 46%; margin-top: -11em; width: 75%; }
+  #kicker { margin-bottom: 1.4em; }
+  #kicker .dash { display: inline-block; width: 2.4em; height: 1px; background: #b5473a; vertical-align: middle; margin-right: 1em; }
+  h1 { margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 5.8em; line-height: 0.98; letter-spacing: -0.01em; color: #efe7d6; }
+  h1 em { font-style: italic; color: #c9a86e; }
+  #lede { margin-top: 1.3em; max-width: 30em; font-size: 1.12em; line-height: 1.6; color: #a99f8b; }
+  #server { margin-top: 2.2em; }
+
+  /* tips */
+  #tipwrap { position: absolute; left: 6%; bottom: 17%; width: 46em; }
+  #tiplabel { margin-bottom: 0.7em; }
+  #tip { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 1.7em; line-height: 1.3; color: #d9cfbb;
+         -webkit-transition: opacity 0.6s ease; transition: opacity 0.6s ease; }
+
+  #discord { position: absolute; right: 6%; bottom: 17%; text-align: right; }
+  #discord .link { display: block; margin-top: 0.5em; font-size: 1.15em; color: #e9e1d0; font-family: "Inter", Arial, sans-serif; letter-spacing: 0.02em; text-transform: none; }
+
+  /* progress */
+  #loader { position: absolute; left: 6%; right: 6%; bottom: 7%; }
+  #line { position: relative; height: 1px; background: #2e2a23; }
+  #fill { position: absolute; left: 0; top: -1px; height: 3px; width: 0; background: #c9a86e;
+          -webkit-transition: width 0.5s ease-out; transition: width 0.5s ease-out; }
+  #row { margin-top: 1em; height: 1.2em; }
+  #status { float: left; max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: 0.04em; }
+  #pct { float: right; color: #e9e1d0; }
+  #files { float: right; margin-right: 2em; }
+</style>
+</head>
+<body>
+<div id="bg"><div id="glow"></div><div id="grain"></div><div id="vignette"></div></div>
+
+<div id="top">
+  <img id="logo" src="logo.png" alt="42Bros">
+  <div id="radio" class="mono off"><span class="bars"><i></i><i></i><i></i><i></i></span><span id="radiotext">Radio &middot; Off air</span></div>
+</div>
+
+<div id="main">
+  <div id="kicker" class="mono"><span class="dash"></span>WWII Roleplay &middot; 1942</div>
+  <h1>Welcome to <em>42Bros</em><br>WWII OccupationRP!</h1>
+  <div id="lede">Serve the Reich, join the Resistance, or keep your head down and make a living. Every side has a part to play.</div>
+  <div id="server" class="mono">Connecting&hellip;</div>
+</div>
+
+<div id="tipwrap">
+  <div id="tiplabel" class="mono">Bulletin</div>
+  <div id="tip"></div>
+</div>
+
+<div id="discord" class="mono">Discord<span class="link" id="discordlink"></span></div>
+
+<div id="loader">
+  <div id="line"><div id="fill"></div></div>
+  <div id="row" class="mono"><span id="status">Waiting for the server&hellip;</span><span id="pct">0%</span><span id="files"></span></div>
+</div>
+
+<div id="yt" style="position:absolute; width:1px; height:1px; left:-10px; top:-10px; overflow:hidden;"></div>
+
+<script>
+/* ============================== SETTINGS ============================== */
+var SETTINGS = {
+    discord: "discord.gg/txrDwmzdCc",
+    youtube: "EbBVfQISovk",       // the YouTube video played as background audio ("" for none)
+    youtubeTitle: "WWII Radio News, 1942",
+    volume: 40,                   // 0-100, times the player's own game volume
+    tips: [
+        "Press F4 for jobs, the shop, the laws and the rules.",
+        "Tune in to the Propaganda Minister's broadcasts on any cinema screen or television.",
+        "New Life Rule: after you die, stay away from where it happened for three minutes.",
+        "At gunpoint, comply. Value your character's life.",
+        "Fires spread. The Fire Patrol puts them out; anyone can buy an extinguisher.",
+        "Saw a rule break? Type @ in chat to send a report to staff.",
+        "Your inventory keeps your goods, guns and ammo through death and restarts.",
+        "Bakers, factory owners and oil men keep the city running. Upgrade your machines."
+    ]
+};
+/* ===================================================================== */
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+var total = 0, needed = 0, gotDetails = false, gameVolume = 1;
+
+function fit() {
+    var h = window.innerHeight || 720, w = window.innerWidth || 1280;
+    document.body.style.fontSize = Math.max(9, Math.min(h / 56, w / 96)) + "px";
+}
+window.onresize = fit;
+fit();
+
+(function grain() {
+    try {
+        var c = document.createElement("canvas"); c.width = c.height = 140;
+        var g = c.getContext("2d"), img = g.createImageData(140, 140);
+        for (var i = 0; i < img.data.length; i += 4) {
+            var v = Math.random() * 255;
+            img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255;
+        }
+        g.putImageData(img, 0, 0);
+        $("grain").style.backgroundImage = "url(" + c.toDataURL() + ")";
+    } catch (e) {}
+})();
+
+if (SETTINGS.discord) $("discordlink").innerHTML = esc(SETTINGS.discord); else $("discord").style.display = "none";
+
+// Bulletin: one tip at a time, cross-faded
+var tipIndex = Math.floor(Math.random() * SETTINGS.tips.length);
+function nextTip() {
+    var el = $("tip");
+    el.style.opacity = 0;
+    setTimeout(function () {
+        el.innerHTML = esc(SETTINGS.tips[tipIndex++ % SETTINGS.tips.length]);
+        el.style.opacity = 1;
+    }, 600);
+}
+nextTip();
+setInterval(nextTip, 8000);
+
+function setProgress(p) {
+    p = Math.max(0, Math.min(1, p));
+    $("fill").style.width = (p * 100) + "%";
+    $("pct").innerHTML = Math.floor(p * 100) + "%";
+}
+function updateFiles() {
+    if (total > 0) {
+        setProgress((total - needed) / total);
+        $("files").innerHTML = (total - needed) + " / " + total + " files";
+    }
+}
+
+/* ---------- background audio (YouTube) ---------- */
+var player = null;
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player("yt", {
+        width: 1, height: 1, videoId: SETTINGS.youtube,
+        playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: SETTINGS.youtube, modestbranding: 1 },
+        events: {
+            onReady: function (e) { e.target.setVolume(Math.round(SETTINGS.volume * gameVolume)); e.target.playVideo(); },
+            onStateChange: function (e) {
+                var on = e.data === 1;
+                $("radio").className = on ? "mono" : "mono off";
+                $("radiotext").innerHTML = on ? "On air &middot; " + esc(SETTINGS.youtubeTitle) : "Radio &middot; Off air";
+            }
+        }
+    });
+}
+if (SETTINGS.youtube) {
+    var s = document.createElement("script");
+    s.src = "https://www.youtube.com/iframe_api";
+    document.getElementsByTagName("head")[0].appendChild(s);
+}
+
+/* ---------- called by Garry's Mod ---------- */
+function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
+    gotDetails = true;
+    $("server").innerHTML = esc(servername) + " &nbsp;&middot;&nbsp; " + esc(mapname);
+    if (volume !== undefined && volume !== null) {
+        gameVolume = Math.max(0, Math.min(1, volume));
+        if (player && player.setVolume) player.setVolume(Math.round(SETTINGS.volume * gameVolume));
+    }
+}
+function SetFilesTotal(t) { total = t; updateFiles(); }
+function SetFilesNeeded(n) { needed = n; updateFiles(); }
+function DownloadingFile(fileName) { $("status").innerHTML = "Downloading " + esc(fileName); }
+function SetStatusChanged(status) {
+    $("status").innerHTML = esc(status);
+    if (/sending client info/i.test(status)) setProgress(1);
+}
+
+/* ---------- opened in a browser: a short demo ---------- */
+setTimeout(function () {
+    if (gotDetails) return;
+    GameDetails("42Bros | WWII OccupationRP | Custom Economy", "", "rp_42bros_v1r2", 64, "", "darkrp", 1, "en");
+    var files = ["models/d42rp/player/wehrmacht_grunt.mdl", "materials/d42rp/posters/poster01.vtf", "sound/rp1942/radio/station1.mp3",
+                 "models/weapons/w_fire_extinguisher.mdl", "models/props_c17/tv_monitor01.mdl"];
+    var i = 0, left = 120;
+    SetFilesTotal(120); SetFilesNeeded(120);
+    setInterval(function () {
+        if (left <= 0) {
+            SetStatusChanged("Sending client info...");
+            if (left-- < -18) { left = 120; SetFilesNeeded(120); }
+            return;
+        }
+        DownloadingFile(files[i++ % files.length]);
+        SetFilesNeeded(--left);
+    }, 160);
+}, 1500);
+</script>
+</body>
+</html>
