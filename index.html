@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>42Bros | WWII OccupationRP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&amp;family=Grenze+Gotisch:wght@600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <!--
   42Bros loading screen. Garry's Mod shows it while players connect
   (sv_loadingurl in server.cfg) and calls GameDetails, SetFilesTotal,
@@ -15,15 +15,15 @@
   (var, no arrow functions): some players' games use an old browser engine.
 -->
 <style>
-  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0d0c0a; }
-  body { color: #e9e1d0; font-family: "Inter", Arial, sans-serif; font-size: 16px; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #11110a; }
+  body { color: #ecebe0; font-family: "Jost", "Futura", "Century Gothic", Arial, sans-serif; font-size: 16px; -webkit-font-smoothing: antialiased; }
 
   #bg { position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-        background: -webkit-radial-gradient(28% 55%, ellipse, #1d1a15 0%, #0d0c0a 62%);
-        background: radial-gradient(ellipse at 28% 55%, #1d1a15 0%, #0d0c0a 62%); }
+        background: -webkit-radial-gradient(28% 55%, ellipse, #38381a 0%, #11110a 62%);
+        background: radial-gradient(ellipse at 28% 55%, #38381a 0%, #11110a 62%); }
   #glow { position: absolute; width: 70em; height: 70em; left: -18em; top: -10em; border-radius: 50%;
-          background: -webkit-radial-gradient(50% 50%, circle, rgba(201,168,110,0.07), rgba(201,168,110,0) 65%);
-          background: radial-gradient(circle, rgba(201,168,110,0.07), rgba(201,168,110,0) 65%);
+          background: -webkit-radial-gradient(50% 50%, circle, rgba(110,110,40,0.20), rgba(110,110,40,0) 65%);
+          background: radial-gradient(circle, rgba(110,110,40,0.20), rgba(110,110,40,0) 65%);
           -webkit-animation: drift 30s ease-in-out infinite alternate; animation: drift 30s ease-in-out infinite alternate; }
   @-webkit-keyframes drift { from { -webkit-transform: translate(0,0); } to { -webkit-transform: translate(12em, 6em); } }
   @keyframes drift { from { transform: translate(0,0); } to { transform: translate(12em, 6em); } }
@@ -35,49 +35,48 @@
               background: -webkit-radial-gradient(50% 50%, ellipse, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
               background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%); }
 
-  .mono { font-family: "IBM Plex Mono", "Courier New", monospace; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: #8c8270; }
+  .mono { font-family: "IBM Plex Mono", "Courier New", monospace; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: #959166; }
 
   /* top bar */
   #top { position: absolute; left: 6%; right: 6%; top: 6%; height: 3em; }
   #logo { position: absolute; left: 0; top: 0; height: 3em; opacity: 0.92; }
   #radio { position: absolute; right: 0; top: 0.9em; white-space: nowrap; }
   #radio .bars { display: inline-block; vertical-align: middle; height: 0.9em; margin-right: 0.8em; }
-  #radio .bars i { display: inline-block; width: 2px; height: 100%; margin-right: 2px; background: #b5473a;
+  #radio .bars i { display: inline-block; width: 2px; height: 100%; margin-right: 2px; background: #b3ad5f;
                    -webkit-transform-origin: 50% 100%; transform-origin: 50% 100%;
                    -webkit-animation: eq 1s ease-in-out infinite alternate; animation: eq 1s ease-in-out infinite alternate; }
   #radio .bars i:nth-child(2) { -webkit-animation-delay: -0.4s; animation-delay: -0.4s; }
   #radio .bars i:nth-child(3) { -webkit-animation-delay: -0.7s; animation-delay: -0.7s; }
   #radio .bars i:nth-child(4) { -webkit-animation-delay: -0.2s; animation-delay: -0.2s; }
-  #radio.off .bars i { -webkit-animation: none; animation: none; -webkit-transform: scaleY(0.2); transform: scaleY(0.2); background: #5a5245; }
+  #radio.off .bars i { -webkit-animation: none; animation: none; -webkit-transform: scaleY(0.2); transform: scaleY(0.2); background: #4d4c22; }
   @-webkit-keyframes eq { from { -webkit-transform: scaleY(0.2); } to { -webkit-transform: scaleY(1); } }
   @keyframes eq { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }
 
   /* the headline */
-  #main { position: absolute; left: 6%; top: 46%; margin-top: -11em; width: 75%; }
-  #kicker { margin-bottom: 1.4em; }
-  #kicker .dash { display: inline-block; width: 2.4em; height: 1px; background: #b5473a; vertical-align: middle; margin-right: 1em; }
-  h1 { margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 5.8em; line-height: 0.98; letter-spacing: -0.01em; color: #efe7d6; }
-  h1 em { font-style: italic; color: #c9a86e; }
-  #lede { margin-top: 1.3em; max-width: 30em; font-size: 1.12em; line-height: 1.6; color: #a99f8b; }
+  #main { position: absolute; left: 6%; top: 46%; margin-top: -9.5em; width: 75%; }
+  #server .dash { display: inline-block; width: 2.4em; height: 1px; background: #b3ad5f; vertical-align: middle; margin-right: 1em; }
+  h1 { margin: 0; font-family: "Jost", "Futura", "Century Gothic", Arial, sans-serif; font-weight: 500; font-size: 5.4em; line-height: 1.0; letter-spacing: -0.01em; color: #e4e2d2; }
+  h1 em { font-style: normal; font-family: "Grenze Gotisch", "Old English Text MT", Georgia, serif; font-weight: 600; font-size: 1.12em; letter-spacing: 0.01em; color: #ffffff; text-shadow: 0 0 0.35em rgba(255,255,255,0.12); }
+  #lede { margin-top: 1.2em; max-width: 34em; font-size: 1.3em; line-height: 1.6; color: #b1ae8a; }
   #server { margin-top: 2.2em; }
 
   /* tips */
   #tipwrap { position: absolute; left: 6%; bottom: 17%; width: 46em; }
   #tiplabel { margin-bottom: 0.7em; }
-  #tip { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 1.7em; line-height: 1.3; color: #d9cfbb;
+  #tip { font-family: "Jost", "Futura", "Century Gothic", Arial, sans-serif; font-size: 1.5em; line-height: 1.3; color: #dddbc9;
          -webkit-transition: opacity 0.6s ease; transition: opacity 0.6s ease; }
 
   #discord { position: absolute; right: 6%; bottom: 17%; text-align: right; }
-  #discord .link { display: block; margin-top: 0.5em; font-size: 1.15em; color: #e9e1d0; font-family: "Inter", Arial, sans-serif; letter-spacing: 0.02em; text-transform: none; }
+  #discord .link { display: block; margin-top: 0.5em; font-size: 1.15em; color: #ecebe0; font-family: "Jost", "Futura", "Century Gothic", Arial, sans-serif; letter-spacing: 0.02em; text-transform: none; }
 
   /* progress */
   #loader { position: absolute; left: 6%; right: 6%; bottom: 7%; }
-  #line { position: relative; height: 1px; background: #2e2a23; }
-  #fill { position: absolute; left: 0; top: -1px; height: 3px; width: 0; background: #c9a86e;
+  #line { position: relative; height: 1px; background: #4a4920; }
+  #fill { position: absolute; left: 0; top: -1px; height: 3px; width: 0; background: #f2f1e8;
           -webkit-transition: width 0.5s ease-out; transition: width 0.5s ease-out; }
   #row { margin-top: 1em; height: 1.2em; }
   #status { float: left; max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: 0.04em; }
-  #pct { float: right; color: #e9e1d0; }
+  #pct { float: right; color: #ecebe0; }
   #files { float: right; margin-right: 2em; }
 </style>
 </head>
@@ -90,9 +89,8 @@
 </div>
 
 <div id="main">
-  <div id="kicker" class="mono"><span class="dash"></span>WWII Roleplay &middot; 1942</div>
   <h1>Welcome to <em>42Bros</em><br>WWII OccupationRP!</h1>
-  <div id="lede">Serve the Reich, join the Resistance, or keep your head down and make a living. Every side has a part to play.</div>
+  <div id="lede">Aid the economy with production, join the fight against the occupation, or serve the Reich. The choice is yours.</div>
   <div id="server" class="mono">Connecting&hellip;</div>
 </div>
 
@@ -206,7 +204,7 @@ if (SETTINGS.youtube) {
 /* ---------- called by Garry's Mod ---------- */
 function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
     gotDetails = true;
-    $("server").innerHTML = esc(servername) + " &nbsp;&middot;&nbsp; " + esc(mapname);
+    $("server").innerHTML = "<span class='dash'></span>Now loading &nbsp;&middot;&nbsp; " + esc(mapname);
     if (volume !== undefined && volume !== null) {
         gameVolume = Math.max(0, Math.min(1, volume));
         if (player && player.setVolume) player.setVolume(Math.round(SETTINGS.volume * gameVolume));
